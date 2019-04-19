@@ -1,11 +1,5 @@
 package utils
 
-import akka.Done
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
-import spray.json.DefaultJsonProtocol._
-import spray.json.RootJsonFormat
-import scala.collection.mutable.Map
-
 
 object FakeDatabase {
 
@@ -115,6 +109,8 @@ object FakeDatabase {
  /* def isExist[Indexed](as: List [ Indexed ], item:Indexed): Boolean ={
     as.filter(item)
   }*/
+
+
   /* TIPS */
   def tip(name: String, amount: Double): Unit = {
     if (users.exists(_.name == name) && amount > 0.0)
@@ -164,19 +160,13 @@ object FakeDatabase {
     }
   }
 
-  def getWinner(id_ga: Int): User = {
-    val r = scala.util.Random
-    val list = giveaways.filter(_.id == id_ga).head
-    list.participants(r.nextInt(list.participants.length))
-    //list().participants
-    /*  if (!list(r.nextInt(list.length)).participants.asInstanceOf[User].blocked)
-        list(r.nextInt(list.length)).participants*/
-  }
 
+
+  /* USERS */
   def removeUser(id:Int): Unit = {
     users = users.filter(_.id!=id)
   }
-  /* USERS */
+
   def blockUser(id: Int): Unit = {
     users.find(_.id == id) match {
       case Some(u) =>
@@ -185,6 +175,12 @@ object FakeDatabase {
         users = users :+ User(newU.id, newU.name,newU.subscribed,true)
       case _ => None
     }
+  }
+
+  def getWinner(id_ga: Int): User = {
+    val r = scala.util.Random
+    val list = giveaways.filter(_.id == id_ga).head
+    list.participants(r.nextInt(list.participants.length))
   }
 
   /* SURVEYS */
