@@ -116,11 +116,11 @@ object FakeDatabase {
     as.filter(item)
   }*/
   /* TIPS */
-  def tip(name: String, amount: Double): List[Tip] = {
+  def tip(name: String, amount: Double): Unit = {
     if (users.exists(_.name == name) && amount > 0.0)
-      tips :+ Tip(tips.length + 1, name, amount)
+      tips = tips :+ Tip(tips.length + 1, name, amount)
     else
-      tips
+      tips = tips
   }
 
   def deleteTip(id: Int): Unit = {
@@ -131,8 +131,8 @@ object FakeDatabase {
     tips.map(_.amount).sum
   }
 
-  def getTipByUser(id: Int):Double = {
-    tips.filter(_.id==id).map(_.amount).sum
+  def getTipByUser(name: String):Double = {
+    tips.filter(_.name==name).map(_.amount).sum
   }
 
   def getTipPerUser(): Predef.Map[String, Double] = {
@@ -145,8 +145,8 @@ object FakeDatabase {
   }
 
   /* GAs */
-  def newGA(id:Int,event: String, cashPrize:Double, participants:List[User]): List[GiveAway] = {
-    giveaways :+ GiveAway(id, event, cashPrize, participants)
+  def newGA(id:Int,event: String, cashPrize:Double, participants:List[User]): Unit = {
+    giveaways = giveaways :+ GiveAway(id, event, cashPrize, participants)
   }
 
   def removeGA(id: Int): Unit = {
@@ -159,7 +159,7 @@ object FakeDatabase {
         val ga = g
         val l = g.participants ++ List(user)
         removeGA(g.id)
-        giveaways = newGA(ga.id, ga.event,ga.amount,l)
+        newGA(ga.id, ga.event,ga.amount,l)
       case _ => None
     }
   }
@@ -182,7 +182,7 @@ object FakeDatabase {
       case Some(u) =>
         val newU = u
         removeUser(u.id)
-        users :+ (newU.id, newU.name,newU.subscribed,newU.blocked)
+        users = users :+ User(newU.id, newU.name,newU.subscribed,true)
       case _ => None
     }
   }
@@ -210,14 +210,4 @@ object FakeDatabase {
   def getSurveyResult(id: Int): List[Survey] = {
     surveys.filter(_.id == id)
   }
-
-
-
-  /*def saveOrder(tip: Tip): Done = {
-    tips = tip match {
-      case t:Tip => List(t) :: tips
-      case _ => tips
-    }
-    Done
-  }*/
 }

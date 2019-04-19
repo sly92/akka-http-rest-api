@@ -48,9 +48,9 @@ object WebServer {
         post {
           path("tip") {
             entity(as[Tip]) { t =>
-              val tiped: List[Tip] = tip(t.name, t.amount)
+              val tiped = tip(t.name, t.amount)
               tiped match {
-                case l: List[Tip] => complete("tip sended successfully")
+                case l: Unit => complete("tip sended successfully")
                 case _ => complete(StatusCodes.NotFound)
               }
             }
@@ -74,10 +74,10 @@ object WebServer {
           }
         } ~
         get {
-          path("tips" / IntNumber) {
-            id =>
+          path("tips" / Segment) {
+            name =>
               //val user = isExist(tips,id)
-              val tip: SumTip = SumTip(getTipByUser(id))
+              val tip: SumTip = SumTip(getTipByUser(name))
               if (tip.sumTip != 0D)
                 complete(tip)
               else
@@ -109,9 +109,9 @@ object WebServer {
        post {
          path("newGa") {
            entity(as[GiveAway]) { item =>
-             val ga:List[GiveAway]  = newGA(item.id, item.event,item.amount,item.participants)
+             val ga:Unit  = newGA(item.id, item.event,item.amount,item.participants)
              ga match {
-               case ga:List[GiveAway] => complete("new giveaway created")
+               case ga:Unit => complete("new giveaway created")
                case _ => complete(StatusCodes.NotFound)
              }
            }
