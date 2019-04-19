@@ -11,7 +11,7 @@ import utils.FakeDatabase._
 
 import scala.io.StdIn
 
-object WebServer2 {
+object WebServer {
 
   def main(args: Array[String]) {
 
