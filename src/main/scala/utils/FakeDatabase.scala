@@ -3,16 +3,24 @@ package utils
 
 object FakeDatabase {
 
- // abstract class Indexed (id:Int)
+  // abstract class Indexed (id:Int)
   final case class User(id: Int, name: String, subscribed: Boolean, blocked: Boolean)
+
   final case class Tip(id: Int, name: String, amount: Double)
+
   final case class GiveAway(id: Int, event: String, amount: Double, participants: List[User])
+
   final case class Survey(id: Int, question: String, option1: String, option2: String, vote1: Int, vote2: Int, participants: List[User])
+
   final case class ListUser(listUser: List[String])
+
   final case class SumTip(sumTip: Double)
+
   final case class ListTips(listTips: List[(String, Double)])
-  final case class UserGa(idGa:Int, user:User)
-  final case class UserSu(idSu:Int, user:User)
+
+  final case class UserGa(idGa: Int, user: User)
+
+  final case class UserSu(idSu: Int, user: User)
 
 
   var users: List[User] = List(
@@ -101,14 +109,15 @@ object FakeDatabase {
         User(9, "Sarah", false, false)
       ))
   )
+
   def fetchAllDonators(): List[String] = {
     tips.map(_.name).distinct
   }
 
 
- /* def isExist[Indexed](as: List [ Indexed ], item:Indexed): Boolean ={
-    as.filter(item)
-  }*/
+  /* def isExist[Indexed](as: List [ Indexed ], item:Indexed): Boolean ={
+     as.filter(item)
+   }*/
 
 
   /* TIPS */
@@ -120,15 +129,15 @@ object FakeDatabase {
   }
 
   def deleteTip(id: Int): Unit = {
-    tips= tips.filter(_.id!=id)
+    tips = tips.filter(_.id != id)
   }
 
   def tipSum(): Double = {
     tips.map(_.amount).sum
   }
 
-  def getTipByUser(name: String):Double = {
-    tips.filter(_.name==name).map(_.amount).sum
+  def getTipByUser(name: String): Double = {
+    tips.filter(_.name == name).map(_.amount).sum
   }
 
   def getTipPerUser(): Predef.Map[String, Double] = {
@@ -141,30 +150,29 @@ object FakeDatabase {
   }
 
   /* GAs */
-  def newGA(id:Int,event: String, cashPrize:Double, participants:List[User]): Unit = {
+  def newGA(id: Int, event: String, cashPrize: Double, participants: List[User]): Unit = {
     giveaways = giveaways :+ GiveAway(id, event, cashPrize, participants)
   }
 
   def removeGA(id: Int): Unit = {
-    giveaways = giveaways.filter(_.id!=id)
+    giveaways = giveaways.filter(_.id != id)
   }
 
-  def subToGA(id_ga:Int, user: User): Unit = {
+  def subToGA(id_ga: Int, user: User): Unit = {
     giveaways.find(_.id == id_ga) match {
       case Some(g) =>
         val ga = g
         val l = g.participants ++ List(user)
         removeGA(g.id)
-        newGA(ga.id, ga.event,ga.amount,l)
+        newGA(ga.id, ga.event, ga.amount, l)
       case _ => None
     }
   }
 
 
-
   /* USERS */
-  def removeUser(id:Int): Unit = {
-    users = users.filter(_.id!=id)
+  def removeUser(id: Int): Unit = {
+    users = users.filter(_.id != id)
   }
 
   def blockUser(id: Int): Unit = {
@@ -172,7 +180,7 @@ object FakeDatabase {
       case Some(u) =>
         val newU = u
         removeUser(u.id)
-        users = users :+ User(newU.id, newU.name,newU.subscribed,true)
+        users = users :+ User(newU.id, newU.name, newU.subscribed, true)
       case _ => None
     }
   }
@@ -184,21 +192,21 @@ object FakeDatabase {
   }
 
   /* SURVEYS */
-  def newSurvey(id:Int,question:String,option1: String, option2: String, listParticipants:List[User]): Unit = {
-    surveys = surveys :+ Survey(id,question, option1, option2, 0, 0, listParticipants)
+  def newSurvey(id: Int, question: String, option1: String, option2: String, listParticipants: List[User]): Unit = {
+    surveys = surveys :+ Survey(id, question, option1, option2, 0, 0, listParticipants)
   }
 
-  def deleteSurvey(id:Int): Unit = {
-    surveys = surveys.filter(_.id!=id)
+  def deleteSurvey(id: Int): Unit = {
+    surveys = surveys.filter(_.id != id)
   }
 
-  def participateToSurvey(id_survey: Int,user: User): Unit = {
+  def participateToSurvey(id_survey: Int, user: User): Unit = {
     surveys.find(_.id == id_survey) match {
       case Some(u) =>
         val newP = u
         val l = u.participants ++ List(user)
         deleteSurvey(u.id)
-        newSurvey(newP.id,newP.question,newP.option1,newP.option2,l)
+        newSurvey(newP.id, newP.question, newP.option1, newP.option2, l)
       case _ => None
     }
   }

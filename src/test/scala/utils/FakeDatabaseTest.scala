@@ -6,9 +6,9 @@ import utils.FakeDatabase._
 class FakeDatabaseTest extends FunSuite {
 
   test("testParticipateToSurvey") {
-    val user = User(100,"testName",false,false)
-    participateToSurvey(1,user)
-    val condition = surveys.filter(_.id==1).map(_.participants.last).head == user
+    val user = User(100, "testName", false, false)
+    participateToSurvey(1, user)
+    val condition = surveys.filter(_.id == 1).map(_.participants.last).head == user
     assert(condition)
   }
 
@@ -19,7 +19,7 @@ class FakeDatabaseTest extends FunSuite {
   }
 
   test("testNewSurvey") {
-    newSurvey(100,"Q1","OPT1","OPT2",List())
+    newSurvey(100, "Q1", "OPT1", "OPT2", List())
     val condition = surveys.exists(_.id == 100)
     assert(condition)
   }
@@ -31,7 +31,7 @@ class FakeDatabaseTest extends FunSuite {
   }
 
   test("testTip") {
-    tip("Jean",2)
+    tip("Jean", 2)
     val condition = tips.exists(tip => tip.name == "Jean" && tip.amount == 2.0)
     assert(condition)
   }
@@ -55,23 +55,23 @@ class FakeDatabaseTest extends FunSuite {
     assert(condition)
   }
 
-   test("testGetTipPerUser") {
+  test("testGetTipPerUser") {
     val listTips = getTipPerUser()
-    val condition = tips.filter(_.name=="Jean").map(_.amount).sum ==15
+    val condition = tips.filter(_.name == "Jean").map(_.amount).sum == 15
     assert(condition)
   }
 
   test("testNewGA") {
-    newGA(100,"test",100,List())
+    newGA(100, "test", 100, List())
     val condition = giveaways.exists(_.id == 100)
     assert(condition)
   }
 
 
   test("testSubToGA") {
-    val user = User(100,"testName",false,false)
-    subToGA(1,user)
-    val condition = giveaways.filter(_.id==1).map(_.participants.last).head == user
+    val user = User(100, "testName", false, false)
+    subToGA(1, user)
+    val condition = giveaways.filter(_.id == 1).map(_.participants.last).head == user
     assert(condition)
   }
 
@@ -95,7 +95,7 @@ class FakeDatabaseTest extends FunSuite {
 
   test("testGetTipByUser") {
     val tips = getTipByUser("Jean")
-    val condition = tips==15.0
+    val condition = tips == 15.0
     assert(condition)
   }
 

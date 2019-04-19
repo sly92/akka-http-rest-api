@@ -44,6 +44,67 @@ object WebServer {
             case _ => complete(StatusCodes.NotFound)
           }
         }
+        path("surveyResult" / IntNumber) {
+          id =>
+            val res: List[Survey] = getSurveyResult(id)
+            res match {
+              case ress => complete(ress)
+              case _ => complete(StatusCodes.NotFound)
+            }
+        }
+        path("winner" / IntNumber) {
+          id =>
+            val winner: User = getWinner(id)
+            winner match {
+              case winnerr: User => complete(winnerr)
+              case _ => complete(StatusCodes.NotFound)
+            }
+        }
+        path("blockUser" / IntNumber) {
+          id =>
+            val blocked: Unit = blockUser(id)
+            complete("User blocked")
+        }
+        path("deleteTip" / IntNumber) {
+          id =>
+            deleteTip(id)
+            complete("Delete done")
+        }
+        path("allTips") {
+          val sum: Double = tipSum()
+          sum match {
+            case s: Double => val stip = SumTip(s)
+              complete(stip)
+            case _ => complete(StatusCodes.NotFound)
+          }
+        }
+        path("tips" / Segment) {
+          name =>
+            //val user = isExist(tips,id)
+            val tip: SumTip = SumTip(getTipByUser(name))
+            if (tip.sumTip != 0D)
+              complete(tip)
+            else
+              complete("Tiper not found")
+        }
+        path("tipsPerUser") {
+          val tips: List[(String, Double)] = getTipPerUser().toList
+          tips match {
+            case l: List[(String, Double)] => {
+              val lu = ListTips(l)
+              complete(lu)
+            }
+            case _ => complete(StatusCodes.NotFound)
+          }
+          complete(tips)
+        }
+        path("subs") {
+          val subs: List[String] = getSubs()
+          subs match {
+            case subss: List[String] => complete(subs)
+            case _ => complete(StatusCodes.NotFound)
+          }
+        }
       } ~
         post {
           path("tip") {
@@ -55,129 +116,44 @@ object WebServer {
               }
             }
           }
-        } ~
-        get {
-          path("deleteTip" / IntNumber) {
-            id =>
-              deleteTip(id)
-              complete("Delete done")
-          }
-        } ~
-        get {
-          path("allTips") {
-            val sum: Double = tipSum()
-            sum match {
-              case s: Double => val stip = SumTip(s)
-                complete(stip)
-              case _ => complete(StatusCodes.NotFound)
-            }
-          }
-        } ~
-        get {
-          path("tips" / Segment) {
-            name =>
-              //val user = isExist(tips,id)
-              val tip: SumTip = SumTip(getTipByUser(name))
-              if (tip.sumTip != 0D)
-                complete(tip)
-              else
-                complete("Tiper not found")
-          }
-        } ~
-        get {
-          path("tipsPerUser") {
-            val tips: List[(String, Double)] = getTipPerUser().toList
-            tips match {
-              case l: List[(String, Double)] => {
-                val lu = ListTips(l)
-                complete(lu)
+          path("newGa") {
+            entity(as[GiveAway]) { item =>
+              val ga: Unit = newGA(item.id, item.event, item.amount, item.participants)
+              ga match {
+                case ga: Unit => complete("new giveaway created")
+                case _ => complete(StatusCodes.NotFound)
               }
-              case _ => complete(StatusCodes.NotFound)
             }
-            complete(tips)
           }
-        }~
-       get {
-         path("subs") {
-             val subs: List[String] = getSubs()
-             subs match {
-               case subss: List[String] => complete(subs)
-               case _ => complete(StatusCodes.NotFound)
-             }
-         }
-       }~
-       post {
-         path("newGa") {
-           entity(as[GiveAway]) { item =>
-             val ga:Unit  = newGA(item.id, item.event,item.amount,item.participants)
-             ga match {
-               case ga:Unit => complete("new giveaway created")
-               case _ => complete(StatusCodes.NotFound)
-             }
-           }
-         }
-       }~
-       post {
-         path("subToGa") {
-           entity(as[UserGa]) { item =>
-             val added : Unit = subToGA(item.idGa, item.user)
-             added match {
-               case uga => complete("Suscribed to GA successfully")
-               case _ => complete(StatusCodes.NotFound)
-             }
-           }
-         }
-       }~
-       get {
-         path("winner" / IntNumber) {
-           id =>
-             val winner: User = getWinner(id)
-             winner match {
-               case winnerr:User => complete(winnerr)
-               case _ => complete(StatusCodes.NotFound)
-             }
-         }
-       }~
-       get {
-         path("blockUser" / IntNumber ) {
-            id =>
-             val blocked: Unit = blockUser(id)
-             complete("User blocked")
-           }
-       }~
-       post {
-         path("newSurvey") {
-           entity(as[Survey]) { item =>
-             val created  = newSurvey(surveys.length+1,item.question, item.option1, item.option2,List())
-             complete("new survey created")
-           }
-         }
-       }~
-       post {
-         path("participate") {
-           entity(as[UserSu]) { item =>
+          path("subToGa") {
+            entity(as[UserGa]) { item =>
+              val added: Unit = subToGA(item.idGa, item.user)
+              added match {
+                case uga => complete("Suscribed to GA successfully")
+                case _ => complete(StatusCodes.NotFound)
+              }
+            }
+          }
+          path("newSurvey") {
+            entity(as[Survey]) { item =>
+              val created = newSurvey(surveys.length + 1, item.question, item.option1, item.option2, List())
+              complete("new survey created")
+            }
+          }
+          path("participate") {
+            entity(as[UserSu]) { item =>
               participateToSurvey(item.idSu, item.user)
               complete("Your participation was registred successfully")
-           }
-         }
-       }~
-       get {
-         path("surveyResult" / IntNumber) {
-           id =>
-             val res: List[Survey] = getSurveyResult(id)
-             res match {
-               case ress => complete(ress)
-               case _ => complete(StatusCodes.NotFound)
-             }
-           }
-         }
+            }
+          }
+        }
 
 
-   val bindingFuture = Http().bindAndHandle(route, "localhost", 8080)
-   println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
-   StdIn.readLine() // let it run until user presses return
-   bindingFuture
-     .flatMap(_.unbind()) // trigger unbinding from the port
-     .onComplete(_ => system.terminate()) // and shutdown when done
- }
- }
+    val bindingFuture = Http().bindAndHandle(route, "localhost", 8080)
+    println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
+    StdIn.readLine() // let it run until user presses return
+    bindingFuture
+      .flatMap(_.unbind()) // trigger unbinding from the port
+      .onComplete(_ => system.terminate()) // and shutdown when done
+  }
+}
