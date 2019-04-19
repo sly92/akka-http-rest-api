@@ -111,12 +111,13 @@ object FakeDatabase {
     tips.map(_.name).distinct
   }
 
+
  /* def isExist[Indexed](as: List [ Indexed ], item:Indexed): Boolean ={
     as.filter(item)
   }*/
   /* TIPS */
   def tip(name: String, amount: Double): List[Tip] = {
-    if (users.exists(_.name == name))
+    if (users.exists(_.name == name) && amount > 0.0)
       tips :+ Tip(tips.length + 1, name, amount)
     else
       tips
